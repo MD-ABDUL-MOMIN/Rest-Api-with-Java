@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.bookmanagement.Book;
 import com.example.bookmanagement.BookService;
+import com.example.exceptionsHandlers.UserNotFoundException;
 import com.example.user_package.User;
 import com.example.user_package.UserOperationService;
 
@@ -57,11 +58,12 @@ public class LibraryBookManageService {
 	}
 	
 
-	public List<Long> submitBook(long userId, List<Long> submittedBookList) {
+	public List<Long> submitBook(long userId, List<Long> submittedBookList) throws UserNotFoundException {
 		List<LibraryManagementModel> bookIssuelist = new ArrayList<LibraryManagementModel>();
 		List<Long> submissionComplete = new ArrayList<Long>();
 		User requestedUser = userOperationService.findUserBy(userId);
-
+        
+          
 		for (long bookId : submittedBookList) {
 			try {
 

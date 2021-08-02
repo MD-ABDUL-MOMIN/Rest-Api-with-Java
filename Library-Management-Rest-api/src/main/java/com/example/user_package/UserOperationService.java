@@ -3,10 +3,13 @@ package com.example.user_package;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import com.example.exceptionsHandlers.UserNotFoundException;
 
 import javassist.NotFoundException;
 
@@ -18,8 +21,9 @@ public class UserOperationService {
 	
 	
 	public List<User> getAllUsers(){
-		return (List<User>) userRepo.findAll();
+		return  userRepo.findAll();
 	}
+	
 
 	public User addUser(User user) {
 		return userRepo.save(user);
@@ -28,17 +32,24 @@ public class UserOperationService {
 
 
 
-	public User findUserBy(long  id) {
+	public User findUserBy(long  id) throws UserNotFoundException {
 		
-	 return  userRepo.findById( id).get();
+		User user = userRepo.findById(id);
+		
+		if(user==null)
+			throw new UserNotFoundException("user not found");
+		
+		return user;
 	 
 	 
 	}
 
 	public ResponseEntity<User> updateUserById(long id, User updatedUser) throws NotFoundException {
-		 User user = userRepo.findById(id).orElseThrow(() ->
-		 new NotFoundException("User not found on:: "+id));
+		 User user = userRepo.findById(id);
+		 if(user == null)
+			 throw new  NotFoundException("not found");
 		 
+	 
 		user.setName(updatedUser.getName());
 		user.setEmail(updatedUser.getEmail());
 		
@@ -49,10 +60,11 @@ public class UserOperationService {
 		
 	}
 
-	public Map<String, Boolean> removeUserById(long id) throws NotFoundException {
+	public Map<String, Boolean> removeUserById(long id) throws NotFoundException{
 		
-		 User user = userRepo.findById(id).orElseThrow(() ->
-		 new NotFoundException("User not found on:: "+id));
+		 User user = userRepo.findById(id);
+		 if(user == null)
+			 throw new  NotFoundException("not found");
 		 
 	      userRepo.delete(user);
 	     Map<String, Boolean> response = new HashMap<>();
